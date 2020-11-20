@@ -127,7 +127,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     // Validate credentials
     if(empty($username_err) && empty($password_err)){
         // Prepare a select statement
-        $sql = "SELECT doc_id, password FROM doctor WHERE doc_id = ?";
+        $sql = "SELECT doc_id, password FROM doctors WHERE doc_id = ?";
         if($stmt = $conn->prepare($sql)){
             // Bind variables to the prepared statement as parameters
             $stmt->bind_param("s", $param_username);
@@ -148,7 +148,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                             // Store data in session variables
                             $_SESSION["loggedin"] = true;
                             $_SESSION["username"] = $username;  
-                            $_SESSION["usertype"] = "user";                     
+                            $_SESSION["usertype"] = "doctor";                     
                             // Redirect user to welcome page
                             header("location: index.php");
                             exit(0);

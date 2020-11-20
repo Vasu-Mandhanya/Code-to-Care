@@ -35,11 +35,64 @@ session_start();
 require_once "DB/connect.php";
  
 // Define variables and initialize with empty values
-$fname = $mname = $sname = $email = $phone = $email = $state = $qual = $spec = $username = $password = "";
-$fname_err = $mname_err = $sname_err = $phone_err = $email_err = $state_err = $qual_err = $spec_err = $username_err = "";
+$fname = $mname = $sname = $email = $phone = $email = $state = $qual = $spec = $username = $password = $confirm_password = "";
+$fname_err = $mname_err = $sname_err = $phone_err = $email_err = $state_err = $qual_err = $spec_err = $username_err = $password_err = $confirm_password_err = "";
  
 // Processing form data when form is submitted
 if($_SERVER["REQUEST_METHOD"] == "POST"){
+
+
+    // Validate username
+    if(empty(trim($_POST["username"]))){
+        $username_err = "Please enter a username.";
+    } else{
+        // Prepare a select statement
+        $sql = "SELECT doc_id FROM doctors WHERE doc_id = ?";
+        
+        if($stmt = $conn->prepare($sql)){
+            // Bind variables to the prepared statement as parameters
+            $stmt->bind_param("s", $param_username);
+            
+            // Set parameters
+            $param_username = trim($_POST["username"]);
+            
+            // Attempt to execute the prepared statement
+            if($stmt->execute()){
+                // store result
+                $stmt->store_result();
+                
+                if($stmt->num_rows == 1){
+                    $username_err = "This username is already taken.";
+                } else{
+                    $username = trim($_POST["username"]);
+                }
+            } else{
+                echo "Oops! Something went wrong. Please try again later.";
+            }
+             // Close statement
+             $stmt->close();
+            }
+        }
+
+// Validate password
+if(empty(trim($_POST["password"]))){
+    $password_err = "Please enter a password.";     
+} elseif(strlen(trim($_POST["password"])) < 8){
+    $password_err = "Password must have atleast 8 characters.";
+} else{
+    $password = trim($_POST["password"]);
+}
+
+// Validate confirm password
+if(empty(trim($_POST["confirm_password"]))){
+    $confirm_password_err = "Please confirm password.";     
+} else{
+    $confirm_password = trim($_POST["confirm_password"]);
+    if(empty($password_err) && ($password != $confirm_password)){
+        $confirm_password_err = "Password did not match.";
+    }
+}
+    
  
     // Validate email
     if(empty(trim($_POST["Email"]))){
@@ -141,6 +194,8 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                     $_SESSION["Fname"]=$fname;
                     $_SESSION["Mname"]=$mname;
                     $_SESSION["Sname"]=$sname;
+                    $_SESSION["Username"]=$username;
+                    $_SESSION["Password"]=password_hash($password, PASSWORD_DEFAULT);
                     $_SESSION["Phone"]=$phone;
                     $_SESSION["Email"]=$email;
                     $_SESSION["Qual"]=$qual;

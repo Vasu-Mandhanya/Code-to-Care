@@ -52,6 +52,8 @@ $state=$_SESSION['State'];
 $fname=$_SESSION["Fname"];
 $mname=$_SESSION["Mname"];
 $sname=$_SESSION["Sname"];
+$Username=$_SESSION["Username"];
+$Password=$_SESSION["Password"];
 $phone=$_SESSION["Phone"];
 $email=$_SESSION["Email"];
 $qual=$_SESSION["Qual"];
@@ -112,11 +114,11 @@ if($_SERVER["REQUEST_METHOD"] == "POST")
                                 $location_id=$loc['location_id'];
                             }
                         #$location_id=$res['location_id'];
-                        $sql2 = "INSERT INTO doctors (location_id,First_Name,Middle_Name,Last_Name,Specialization,Qualification) VALUES (?,?,?,?,?,?);";
+                        $sql2 = "INSERT INTO doctors (location_id,First_Name,Middle_Name,Last_Name,Specialization,Qualification,doc_id,password,hospital_id) VALUES (?,?,?,?,?,?,?,?,?);";
                         if($stmt2 = $conn->prepare($sql2))
                         {
                             // Bind variables to the prepared statement as parameters
-                            $stmt2->bind_param("ssssss",$param_location_id,$param_First_Name,$param_Middle_Name,$param_Last_Name,$param_Specialization,$param_Qualification);
+                            $stmt2->bind_param("sssssssss",$param_location_id,$param_First_Name,$param_Middle_Name,$param_Last_Name,$param_Specialization,$param_Qualification,$param_Username,$param_Password,$param_Hospital);
                             // Set parameters
                             $param_location_id=$location_id;
                             $param_First_Name=$fname;
@@ -124,6 +126,10 @@ if($_SERVER["REQUEST_METHOD"] == "POST")
                             $param_Last_Name=$sname;
                             $param_Specialization=$spec;
                             $param_Qualification=$qual;
+                            $param_Username=$Username;
+                            $param_Password=$Password;
+                            $param_Hospital="ehcc";
+
                             // Attempt to execute the prepared statement
                             if($stmt2 ->execute())
                             {
