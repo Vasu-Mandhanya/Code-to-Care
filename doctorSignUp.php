@@ -35,8 +35,8 @@ session_start();
 require_once "DB/connect.php";
  
 // Define variables and initialize with empty values
-$fname = $mname = $sname = $email = $phone = $email = $state = $qual = $spec = "";
-$fname_err = $mname_err = $sname_err = $phone_err = $email_err = $state_err = $qual_err = $spec_err = "";
+$fname = $mname = $sname = $email = $phone = $email = $state = $qual = $spec = $username = $password = "";
+$fname_err = $mname_err = $sname_err = $phone_err = $email_err = $state_err = $qual_err = $spec_err = $username_err = "";
  
 // Processing form data when form is submitted
 if($_SERVER["REQUEST_METHOD"] == "POST"){
@@ -248,7 +248,27 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                 <label>Surname</label>
                 <input type="text" name="Sname" class="form-control" value="<?php echo $sname; ?>">
 				<span class="help-block"><?php echo $sname_err; ?></span>
-            </div>    
+            </div>  
+
+            <!-- Doctor Username, Password-->
+            <div class="form-group <?php echo (!empty($username_err)) ? 'has-error' : ''; ?>">
+                <label>Username</label>
+                <input type="text" name="username" class="form-control" value="<?php echo $username; ?>">
+                <span class="help-block"><?php echo $username_err; ?></span>
+            </div> 
+
+            <div class="form-group <?php echo (!empty($password_err)) ? 'has-error' : ''; ?>">
+                <label>Password</label>
+                <input type="password" name="password" class="form-control" value="<?php echo $password; ?>">
+                <span class="help-block"><?php echo $password_err; ?></span>
+            </div>
+            <div class="form-group <?php echo (!empty($confirm_password_err)) ? 'has-error' : ''; ?>">
+                <label>Confirm Password</label>
+                <input type="password" name="confirm_password" class="form-control" value="<?php echo $confirm_password; ?>">
+                <span class="help-block"><?php echo $confirm_password_err; ?></span>
+            </div>
+
+
             <div class="form-group <?php echo (!empty($phone_err)) ? 'has-error' : ''; ?>">
                 <label>Phone No.</label>
                 <input type="text" name="Phone" class="form-control" value="<?php echo $phone; ?>">
