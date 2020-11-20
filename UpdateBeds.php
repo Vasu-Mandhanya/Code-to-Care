@@ -156,6 +156,21 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
         </div>
       </li>';
       }
+      elseif($_SESSION["usertype"]=="doctor")
+      {
+        echo "
+        <li class='nav-item dropdown'>
+        <a class='nav-link dropdown-toggle' id='navbarDropdown' role='button' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>
+            Hi ".$_SESSION['username'].'
+        </a>
+        <div class="dropdown-menu" style="background-color: #663399 ;" aria-labelledby="navbarDropdown">
+            <a class="nav-link" href="doctorprofile.php">Profile</a>
+            <a class="nav-link" href="viewpatients.php">Patients</a>
+            <div class="dropdown-divider"></div>
+            <a class="nav-link" href="logout.php">Sign Out</a>
+        </div>
+        </li>';
+        }
       elseif ($_SESSION["usertype"]=="hospital") {
         echo "
         <li class='nav-item dropdown'>
@@ -171,10 +186,20 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
       </li>';
       }
     }
-      else
-      {
-          echo '<li><a class="nav-link" href="login.php">Login</a></li>';
-      }
+    else
+    {
+      echo "
+      <li class='nav-item dropdown'>
+      <a class='nav-link dropdown-toggle active' id='navbarDropdown' role='button' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>
+      ".'Login'.'
+      </a>
+      <div class="dropdown-menu" style="background-color: #663399 ;" aria-labelledby="navbarDropdown">
+        <a class="nav-link" href="login.php">User</a>
+        <a class="nav-link" href="Doctor_Login.php">Doctor</a>
+        <a class="nav-link" href="HospitalLogin.php">Hospital</a>
+    </li>';
+       // echo '<li><a class="nav-link" href="login.php">Login</a></li>';
+    }
       ?>
     </ul>
     </div>
