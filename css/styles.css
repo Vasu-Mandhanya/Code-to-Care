@@ -1,0 +1,99 @@
+/* CSS Document */
+.navbar-purple{
+	background-color: #663399 ;
+	font-family: Segoe, "Segoe UI", "DejaVu Sans", "Trebuchet MS", Verdana, "sans-serif";
+}
+.navbar-brand{
+	font-size: 1.75rem !important;
+	 color:aliceblue;
+}
+.navbar-brand:hover{
+	color:coral	!important;
+}
+.nav-link{
+	color:aliceblue; 
+	font-size: 1.25rem!important;
+	font-family: Segoe, "Segoe UI", "DejaVu Sans", "Trebuchet MS", Verdana, "sans-serif";
+}
+.nav-link:hover,.nav-link:focus{
+	color:coral !important; 
+	text-decoration: underline !important;
+}
+
+.active{
+	color: rgb(201, 22, 186);
+	font-weight: bolder;
+}
+
+.wrapper{ 
+	width: 350px;
+	padding: 20px; 
+}
+
+.textCenter{
+		text-align: center;
+}
+
+.imageCent{
+	display: flex;
+	justify-content: center;
+  }
+
+  .help-block{
+	  color : red !important;
+  }
+
+  .dropdownitem{
+	display: block !important;
+	width: 100% !important;
+	padding: 0.25rem 1.5rem !important;
+	clear: both !important;
+	font-weight: 400 !important;
+	color: aliceblue !important;
+	text-align: center !important;
+	white-space: nowrap !important; 
+	background-color: rebeccapurple !important;
+	border: 0 !important;
+  }
+  
+  .dropdown-item:focus, .dropdown-item:hover{
+	color:coral !important; 
+	text-decoration: underline !important;
+	background-color: #663399 !important;	
+  }
+
+
+
+
+ /* Container needed to position the button. Adjust the width as needed 
+.container {
+	position: relative;
+	width: 50%;
+  }
+  
+  Make the image responsive 
+  .container img {
+	width: 100%;
+	height: auto;
+  }
+  
+  Style the button and place it in the middle of the container/image 
+  .container .btn {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	-ms-transform: translate(-50%, -50%);
+	background-color: #555;
+	color: white;
+	font-size: 16px;
+	padding: 12px 24px;
+	border: none;
+	cursor: pointer;
+	border-radius: 5px;
+  }
+  
+  .container .btn:hover {
+	background-color: black;
+  }
+  */
