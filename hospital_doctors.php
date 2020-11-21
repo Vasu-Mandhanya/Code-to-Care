@@ -19,11 +19,6 @@
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script> 
 <link href="css/styles.css" rel="stylesheet" type="text/css">
 </head>
-<?php 
-  // Initialize the session
-session_start();
-$_SESSION['HospitalName']='Volunteer';
-?>
 <body>
 <header>
   <nav class="navbar navbar-expand-lg navbar-purple">
@@ -38,13 +33,13 @@ $_SESSION['HospitalName']='Volunteer';
           </li>
           <li><a class="nav-link" href="about.php"> About Us  </a></li>
           <li><a class="nav-link" href="hospitals.php"> Hospitals  </a></li>
-          <li><a class="nav-link active" href="advice.php"> Seek Advice  </a></li>
+          <li><a class="nav-link" href="advice.php"> Seek Advice  </a></li>
           <li><a class="nav-link" href="cases.php"> Track Cases  </a></li>
         </ul>
         <ul class="navbar-nav ml-auto">
         <?php 
   // Initialize the session
-//session_start();
+session_start();
         if(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true)
         {
             if($_SESSION["usertype"]=="user")
@@ -84,8 +79,8 @@ $_SESSION['HospitalName']='Volunteer';
         </a>
         <div class="dropdown-menu" style="background-color: #663399 ;" aria-labelledby="navbarDropdown">
           <a class="nav-link" href="hospitalProfile.php">Patients</a>
-          <a class="nav-link" href="hospital_doctors.php">Doctors</a>
           <a class="nav-link" href="HospitalUpdateInfo.php">Profile</a>
+          <a class="nav-link" href="hospital_doctors.php">Doctors</a>
           <div class="dropdown-divider"></div>
           <a class="nav-link" href="logout.php">Sign Out</a>
         </div>
@@ -111,13 +106,15 @@ $_SESSION['HospitalName']='Volunteer';
     </div>
 </nav>
 </header>
-
+<?php
+$_SESSION['HospitalName']=$_SESSION['username'];
+?>
 <section class="jumbotron text-center">
                 <div class="container">
 				<img src="Assets/doc_team.png"/>
-                    <h1 class="jumbotron-heading">Nation wide list of Volunteer Doctors!</h1>
-                    <p class="lead text-muted">The pandemic is causing a global helthcare emergency. As the healthcare services are not uniform and everyone can't afford to go an expensive doctor. We provide you with the contact details of doctors to consult with! </p>
-					<a href="doctorSignUp.php">If you are a doctor and wish to volunteer for this nobel cause.Sign Up now.</a>
+                    <h1 class="jumbotron-heading">List of registered Doctors in your hospital</h1>
+                    <p class="lead text-muted">The pandemic is causing a global helthcare emergency.As the healthcare services are not uniform and everyone can't afford to go an expensive doctor. We provide you with the contact details of doctors to consult with! </p>
+					<a href="doctorSignUp.php">Sign up a new doctor!</a>
 				</div>	
 </section>
                     <div class="table-responsive">
@@ -130,13 +127,14 @@ $_SESSION['HospitalName']='Volunteer';
                                     <th>Specialisation</th>
                                     <th>E-mail</th>
                                     <th>Phone No.</th>
-									<th>State</th>
+								
                                 </tr>
                             </thead>
                             <tbody>
                         <?php 
                         require_once("DB/connect.php");
-                        $query1 = "SELECT * FROM doctors d1 INNER JOIN doc_mail d2 ON d1.Doc_ID=d2.Doc_ID INNER JOIN doc_phone d3 ON d2.Doc_ID=d3.Doc_ID INNER JOIN location l ON d1.Location_ID=l.Location_ID INNER JOIN district d4 ON d4.District_Code=l.District_Code INNER JOIN state s ON s.State_Code=d4.State_Code WHERE Hospital_ID='Volunteer';";
+                        $hospitalname=$_SESSION['HospitalName'];
+                        $query1 = "SELECT * FROM doctors d1 INNER JOIN doc_mail d2 ON d1.Doc_ID=d2.Doc_ID INNER JOIN doc_phone d3 ON d2.Doc_ID=d3.Doc_ID INNER JOIN location l ON d1.Location_ID=l.Location_ID INNER JOIN district d4 ON d4.District_Code=l.District_Code INNER JOIN state s ON s.State_Code=d4.State_Code WHERE Hospital_ID='$hospitalname';";
                         $results1=mysqli_query($conn, $query1);
                         //loop
                         $sno=1;
@@ -150,7 +148,7 @@ $_SESSION['HospitalName']='Volunteer';
                             echo '<td>'.$d['Specialization'].'</td>';
                             echo '<td>'.$d['Email'].'</td>';
                             echo '<td>'.$d['Phone_No'].'</td>';
-                            echo '<td>'.$d['Name'].'</td>';
+                    
                             echo '</tr>';
                         }
                         $results1->close(); 

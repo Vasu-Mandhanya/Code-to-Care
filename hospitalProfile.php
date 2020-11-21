@@ -164,6 +164,7 @@ $result = mysqli_query($conn, $query);
         <div class="dropdown-menu" style="background-color: #663399 ;" aria-labelledby="navbarDropdown">
           <a class="nav-link" href="hospitalProfile.php">Patients</a>
           <a class="nav-link" href="HospitalUpdateInfo.php">Profile</a>
+          <a class="nav-link" href="hospital_doctors.php">Doctors</a>
           <div class="dropdown-divider"></div>
           <a class="nav-link" href="logout.php">Sign Out</a>
         </div>

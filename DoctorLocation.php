@@ -128,8 +128,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST")
                             $param_Qualification=$qual;
                             $param_Username=$Username;
                             $param_Password=$Password;
-                            $param_Hospital="ehcc";
-
+                            $param_Hospital=$_SESSION['HospitalName'];
                             // Attempt to execute the prepared statement
                             if($stmt2 ->execute())
                             {
@@ -184,7 +183,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST")
                             {
                                 #echo "working 3";
                                 $conn->close();
-                                header("location: advice.php");
+                                header("location: doctorprofile.php");
                             }
                             else{
                                 #echo "nana3";
