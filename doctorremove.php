@@ -18,8 +18,75 @@
 <!-- Latest compiled JavaScript -->
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script> 
 <link href="css/styles.css" rel="stylesheet" type="text/css">
+<style>
+body {
+  background-image: url('Assets/GettyImages-1200706447-crop.jpg');
+  background-size: cover;
+}
+</style>
 </head>
+<?php 
+  // Initialize the session
+session_start();
+?>
 <body>
+<?php
+// Include config file
+require_once "DB/connect.php";
+// Define variables and initialize with empty values
+$username="";
+$username_err="";
+// Processing form data when form is submitted
+if($_SERVER["REQUEST_METHOD"] == "POST")
+{
+    if(empty(trim($_POST["username"])))
+    {
+        $username_err = "Please enter a Doc ID.";
+    } 
+    else{
+        // Prepare a select statement
+        $sql = "SELECT doc_id FROM doctors WHERE doc_id = ?";
+        if($stmt = $conn->prepare($sql)){
+            // Bind variables to the prepared statement as parameters
+            $stmt->bind_param("s", $param_username);
+            
+            // Set parameters
+            $param_username = trim($_POST["username"]);
+            
+            // Attempt to execute the prepared statement
+            if($stmt->execute()){
+                // store result
+                $stmt->store_result();
+                
+                if($stmt->num_rows == 0){
+                    $username_err = "This Doc ID does not exist.";
+                } else{
+                    $username = trim($_POST["username"]);
+                }
+            } 
+            else
+            {
+                echo "Oops! Something went wrong. Please try again later.";
+            }
+             // Close statement
+             $stmt->close();
+            }
+        }
+    // Check input errors before inserting in database
+    if(empty($username_err))
+	{
+        echo $username;
+        // Prepare an insert statement
+        $sql1 = "Delete FROM doctors WHERE Doc_ID='$username'";
+        $sql2 = "Delete FROM doc_mail WHERE Doc_ID='$username'";
+        $sql3 = "Delete FROM doc_phone WHERE Doc_ID='$username'";
+        $conn->query($sql1);
+        $conn->query($sql2);
+        $conn->query($sql3);
+        header("location: hospital_doctors.php");
+    }
+}
+?>
 <header>
   <nav class="navbar navbar-expand-lg navbar-purple">
   <a class="navbar-brand" href="index.php">CoVITal</a>
@@ -33,13 +100,13 @@
           </li>
           <li><a class="nav-link" href="about.php"> About Us  </a></li>
           <li><a class="nav-link" href="hospitals.php"> Hospitals  </a></li>
-          <li><a class="nav-link" href="advice.php"> Seek Advice  </a></li>
+          <li><a class="nav-link active" href="advice.php"> Seek Advice  </a></li>
           <li><a class="nav-link" href="cases.php"> Track Cases  </a></li>
         </ul>
         <ul class="navbar-nav ml-auto">
         <?php 
   // Initialize the session
-session_start();
+#session_start();
         if(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true)
         {
             if($_SESSION["usertype"]=="user")
@@ -60,7 +127,7 @@ session_start();
       {
         echo "
         <li class='nav-item dropdown'>
-        <a class='nav-link dropdown-toggle' id='navbarDropdown' role='button' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>
+        <a class='nav-link dropdown-toggle active' id='navbarDropdown' role='button' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>
             Hi ".$_SESSION['username'].'
         </a>
         <div class="dropdown-menu" style="background-color: #663399 ;" aria-labelledby="navbarDropdown">
@@ -80,7 +147,6 @@ session_start();
         <div class="dropdown-menu" style="background-color: #663399 ;" aria-labelledby="navbarDropdown">
           <a class="nav-link" href="hospitalProfile.php">Patients</a>
           <a class="nav-link" href="HospitalUpdateInfo.php">Profile</a>
-          <a class="nav-link" href="hospital_doctors.php">Doctors</a>
           <div class="dropdown-divider"></div>
           <a class="nav-link" href="logout.php">Sign Out</a>
         </div>
@@ -91,7 +157,7 @@ session_start();
     {
       echo "
       <li class='nav-item dropdown'>
-      <a class='nav-link dropdown-toggle' id='navbarDropdown' role='button' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>
+      <a class='nav-link dropdown-toggle active' id='navbarDropdown' role='button' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>
       ".'Login'.'
       </a>
       <div class="dropdown-menu" style="background-color: #663399 ;" aria-labelledby="navbarDropdown">
@@ -106,58 +172,30 @@ session_start();
     </div>
 </nav>
 </header>
-<?php
-$_SESSION['HospitalName']=$_SESSION['username'];
-?>
-<section class="jumbotron text-center">
-                <div class="container">
-				<img src="Assets/doc_team.png"/>
-                    <h1 class="jumbotron-heading">List of registered Doctors in your hospital</h1>
-                    <p class="lead text-muted">The pandemic is causing a global helthcare emergency.As the healthcare services are not uniform and everyone can't afford to go an expensive doctor. We provide you with the contact details of doctors to consult with! </p>
-					<a href="doctorSignUp.php">Sign up a new doctor!</a>
-          &emsp;
-          <a href="doctorremove.php">Remove a doctor profile</a>
-				</div>	
-</section>
-                    <div class="table-responsive">
-                        <table class="table table-striped table-sm">
-                            <thead>
-                                <tr>
-                                    <th>S.No</th>
-                                    <th>Doc ID</th>
-                                    <th>Name</th>
-                                    <th>Qualification</th>
-                                    <th>Specialisation</th>
-                                    <th>E-mail</th>
-                                    <th>Phone No.</th>
-								
-                                </tr>
-                            </thead>
-                            <tbody>
-                        <?php 
-                        require_once("DB/connect.php");
-                        $hospitalname=$_SESSION['HospitalName'];
-                        $query1 = "SELECT * FROM doctors d1 INNER JOIN doc_mail d2 ON d1.Doc_ID=d2.Doc_ID INNER JOIN doc_phone d3 ON d2.Doc_ID=d3.Doc_ID INNER JOIN location l ON d1.Location_ID=l.Location_ID INNER JOIN district d4 ON d4.District_Code=l.District_Code INNER JOIN state s ON s.State_Code=d4.State_Code WHERE Hospital_ID='$hospitalname';";
-                        $results1=mysqli_query($conn, $query1);
-                        //loop
-                        $sno=1;
-                        foreach ($results1 as $d)
-                        {
-                            echo '<tr>';
-                            echo '<td>'.$sno.'</td>';
-                            $sno+=1;
-                            echo '<td>'.$d['Doc_ID'].'</td>';
-                            echo '<td>'.'Dr. '.$d['First_Name'].' '.$d['Last_Name'].'</td>';
-                            echo '<td>'.$d['Qualification'].'</td>';
-                            echo '<td>'.$d['Specialization'].'</td>';
-                            echo '<td>'.$d['Email'].'</td>';
-                            echo '<td>'.$d['Phone_No'].'</td>';
-                            echo '</tr>';
-                        }
-                        $results1->close(); 
-                        ?>  
-                            </tbody>
-                        </table>
-                    </div>
+<div class="wrapper" style="
+    display: inline-block;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 500px;
+    height: 600px;
+    margin: auto;
+    background-color: #f3f3f3;">
+        <h2>Remove Doctor</h2>
+        <p>Please enter Doc ID of doctor you wish to remove.</p>
+        <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
+        <div class="form-group <?php echo (!empty($username_err)) ? 'has-error' : ''; ?>">
+                <label>Doctor ID</label>
+                <input type="text" name="username" class="form-control" value="<?php echo $username; ?>">
+                <span class="help-block"><?php echo $username_err; ?></span>
+            </div>   
+            <div class="form-group">
+                <input type="submit" class="btn btn-primary" value="Submit">
+                <input type="reset" class="btn btn-default" value="Reset">
+            </div>
+        </form>
+    </div>   
 </body>
 </html>

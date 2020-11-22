@@ -19,6 +19,45 @@
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script> 
 <link href="css/styles.css" rel="stylesheet" type="text/css">
 </head>
+<?php 
+  // Initialize the session
+session_start();
+// Check if the user is already logged in, if yes then redirect him to welcome page
+if(!isset($_SESSION["loggedin"]))
+{
+    header("location: login.php");
+    exit;  
+}
+if(!isset($_SESSION["username"]))
+{
+    header("location: login.php");
+    exit;  
+}
+if($_SESSION["usertype"]!="user")
+{
+    header("location: login.php");
+    exit;  
+}
+require_once "DB/connect.php";
+if($_GET){
+
+    if(isset($_GET['hospitalid']))
+    {
+        $hospitalid=$_GET['hospitalid'];
+    }else
+    {
+        header("location: hospitals.php");
+        exit;  
+    }
+}
+
+$query1 = "SELECT * FROM hospital WHERE Hospital_ID='$hospitalid'";
+$results1=mysqli_query($conn, $query1);
+foreach ($results1 as $h)
+{
+    $hname=$h["Name"];
+}
+?>
 <body>
 <header>
   <nav class="navbar navbar-expand-lg navbar-purple">
@@ -39,18 +78,18 @@
         <ul class="navbar-nav ml-auto">
         <?php 
   // Initialize the session
-session_start();
+#session_start();
         if(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true)
         {
             if($_SESSION["usertype"]=="user")
             {
         echo "
         <li class='nav-item dropdown'>
-        <a class='nav-link dropdown-toggle' id='navbarDropdown' role='button' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>
+        <a class='nav-link dropdown-toggle active' id='navbarDropdown' role='button' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>
             Hi ".$_SESSION['username'].'
         </a>
         <div class="dropdown-menu" style="background-color: #663399 ;" aria-labelledby="navbarDropdown">
-          <a class="nav-link" href="user.php">Profile</a>
+          <a class="nav-link active" href="user.php">Profile</a>
           <div class="dropdown-divider"></div>
           <a class="nav-link" href="logout.php">Sign Out</a>
         </div>
@@ -60,7 +99,7 @@ session_start();
       {
         echo "
         <li class='nav-item dropdown'>
-        <a class='nav-link dropdown-toggle' id='navbarDropdown' role='button' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>
+        <a class='nav-link dropdown-toggle active' id='navbarDropdown' role='button' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>
             Hi ".$_SESSION['username'].'
         </a>
         <div class="dropdown-menu" style="background-color: #663399 ;" aria-labelledby="navbarDropdown">
@@ -80,7 +119,6 @@ session_start();
         <div class="dropdown-menu" style="background-color: #663399 ;" aria-labelledby="navbarDropdown">
           <a class="nav-link" href="hospitalProfile.php">Patients</a>
           <a class="nav-link" href="HospitalUpdateInfo.php">Profile</a>
-          <a class="nav-link" href="hospital_doctors.php">Doctors</a>
           <div class="dropdown-divider"></div>
           <a class="nav-link" href="logout.php">Sign Out</a>
         </div>
@@ -106,38 +144,30 @@ session_start();
     </div>
 </nav>
 </header>
-<?php
-$_SESSION['HospitalName']=$_SESSION['username'];
-?>
 <section class="jumbotron text-center">
                 <div class="container">
 				<img src="Assets/doc_team.png"/>
-                    <h1 class="jumbotron-heading">List of registered Doctors in your hospital</h1>
-                    <p class="lead text-muted">The pandemic is causing a global helthcare emergency.As the healthcare services are not uniform and everyone can't afford to go an expensive doctor. We provide you with the contact details of doctors to consult with! </p>
-					<a href="doctorSignUp.php">Sign up a new doctor!</a>
-          &emsp;
-          <a href="doctorremove.php">Remove a doctor profile</a>
+                    <h1 class="jumbotron-heading">Available Doctors!</h1>
+                    <p class="lead text-muted">The pandemic is causing a global helthcare emergency. As the healthcare services are not uniform and everyone can't afford to go an expensive doctor. We provide you with the facility of contacting doctors online to consult with! </p>
 				</div>	
 </section>
-                    <div class="table-responsive">
+<div class="table-responsive">
                         <table class="table table-striped table-sm">
                             <thead>
                                 <tr>
                                     <th>S.No</th>
-                                    <th>Doc ID</th>
                                     <th>Name</th>
                                     <th>Qualification</th>
                                     <th>Specialisation</th>
                                     <th>E-mail</th>
                                     <th>Phone No.</th>
-								
+                                    <th>Schedule</th>
+                                    <th>Consult</th>
                                 </tr>
                             </thead>
                             <tbody>
                         <?php 
-                        require_once("DB/connect.php");
-                        $hospitalname=$_SESSION['HospitalName'];
-                        $query1 = "SELECT * FROM doctors d1 INNER JOIN doc_mail d2 ON d1.Doc_ID=d2.Doc_ID INNER JOIN doc_phone d3 ON d2.Doc_ID=d3.Doc_ID INNER JOIN location l ON d1.Location_ID=l.Location_ID INNER JOIN district d4 ON d4.District_Code=l.District_Code INNER JOIN state s ON s.State_Code=d4.State_Code WHERE Hospital_ID='$hospitalname';";
+                        $query1 = "SELECT * FROM doctors d1 INNER JOIN doc_mail d2 ON d1.Doc_ID=d2.Doc_ID INNER JOIN doc_phone d3 ON d2.Doc_ID=d3.Doc_ID INNER JOIN location l ON d1.Location_ID=l.Location_ID INNER JOIN district d4 ON d4.District_Code=l.District_Code INNER JOIN state s ON s.State_Code=d4.State_Code WHERE Hospital_ID='Volunteer';";
                         $results1=mysqli_query($conn, $query1);
                         //loop
                         $sno=1;
@@ -146,18 +176,21 @@ $_SESSION['HospitalName']=$_SESSION['username'];
                             echo '<tr>';
                             echo '<td>'.$sno.'</td>';
                             $sno+=1;
-                            echo '<td>'.$d['Doc_ID'].'</td>';
                             echo '<td>'.'Dr. '.$d['First_Name'].' '.$d['Last_Name'].'</td>';
                             echo '<td>'.$d['Qualification'].'</td>';
                             echo '<td>'.$d['Specialization'].'</td>';
                             echo '<td>'.$d['Email'].'</td>';
                             echo '<td>'.$d['Phone_No'].'</td>';
+                            echo '<td>'.$d['Schedule'].'</td>';
+                            echo '<td>';
+                            echo ' <button id="btn1" class="btn btn-primary" name="btn1" onClick="javascript:location.href='."'appointmenttime.php?docid=".$d['Doc_ID']."'".'">Consult</button>';
+                            echo '</td>';
                             echo '</tr>';
                         }
                         $results1->close(); 
                         ?>  
                             </tbody>
                         </table>
-                    </div>
 </body>
 </html>
+     

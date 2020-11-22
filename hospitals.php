@@ -380,9 +380,12 @@ if($district!="")
                                                 <p class="card-text" style="color:green">Ventilator:';
                                                 echo $hospitals["Ventilators"];
                                                 echo '</p>';
-                                                echo '<h6 class="card-text textCenter"> <a href="';
-                                                echo $hospitals["Website"];
-                                                echo '" style="ext-align: center";>Visit Website</a> </h6>
+                                                echo ' <button id="btn1" class="btn btn-primary" name="btn1" onClick="javascript:location.href='."'appointments.php?hospitalid=".$hospitals['Hospital_ID']."'".'">Book Appointment</button>';
+                                                echo ' <button id="btn2" class="btn btn-secondary my-2" name="btn2" onClick="javascript:location.href='."'".$hospitals['Website']."'".'"'.'>Visit Website</button>';
+                                               
+                                                
+                                               
+                                                echo '
                                             </div>
                                         </div>
                                     </div>';
@@ -390,7 +393,7 @@ if($district!="")
                          }
 }
 elseif($state!=""){
-    $query2 = "SELECT h.Image,h.Website,h.Name 'Hname',h.Email,h.Phone,l.Address,l.Pincode,d.Name 'Dname',b.Normal,b.ICU,b.Ventilators FROM hospital h INNER JOIN beds b ON h.Hospital_ID=b.Hospital_ID INNER JOIN location l ON h.Location_ID=l.Location_ID INNER JOIN district d ON l.District_Code =d.District_Code INNER JOIN state s ON d.State_Code =s.State_Code WHERE s.State_Code='$state' ";
+    $query2 = "SELECT h.Hospital_ID,h.Image,h.Website,h.Name 'Hname',h.Email,h.Phone,l.Address,l.Pincode,d.Name 'Dname',b.Normal,b.ICU,b.Ventilators FROM hospital h INNER JOIN beds b ON h.Hospital_ID=b.Hospital_ID INNER JOIN location l ON h.Location_ID=l.Location_ID INNER JOIN district d ON l.District_Code =d.District_Code INNER JOIN state s ON d.State_Code =s.State_Code WHERE s.State_Code='$state' ";
     $results2=mysqli_query($conn, $query2);
     foreach($results2 as $hospitals)
     {
@@ -432,9 +435,9 @@ elseif($state!=""){
                             <p class="card-text" style="color:green">Ventilator:';
                             echo $hospitals["Ventilators"];
                             echo '</p>';
-                            echo '<h6 class="card-text textCenter"> <a href="';
-                            echo $hospitals["Website"];
-                            echo '" style="ext-align: center";>Visit Website</a> </h6>
+                            echo ' <button id="btn1" class="btn btn-primary" name="btn1" onClick="javascript:location.href='."'appointments.php?hospitalid=".$hospitals['Hospital_ID']."'".'">Book Appointment</button>';
+                            echo ' <button id="btn2" class="btn btn-secondary my-2" name="btn2" onClick="javascript:location.href='."'".$hospitals['Website']."'".'"'.'>Visit Website</button>';
+                            echo '
                         </div>
                     </div>
                 </div>';

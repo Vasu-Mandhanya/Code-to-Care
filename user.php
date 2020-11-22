@@ -275,15 +275,73 @@ if($_SERVER["REQUEST_METHOD"] == "POST")
        </div>
         <div class="col-lg-8 order-lg-2">
             <ul class="nav nav-tabs">
+            <li class="nav-item">
+                    <a href="" data-target="#dashboard" data-toggle="tab" class="nav-link active" style="color: black">Dashboard</a>
+                </li>
                 <li class="nav-item">
-                    <a href="" data-target="#profile" data-toggle="tab" class="nav-link active" style="color: black">Profile</a>
+                    <a href="" data-target="#profile" data-toggle="tab" class="nav-link" style="color: black">Profile</a>
                 </li>
                 <li class="nav-item">
                     <a href="" data-target="#edit" data-toggle="tab" class="nav-link" style="color: black">Edit</a>
                 </li>
             </ul>
             <div class="tab-content py-4">
-                <div class="tab-pane active" id="profile">
+            <div class="tab-pane active" id="dashboard">
+            <h2>Your Appointments: </h2>
+            <!--Start OF DASHBORD TAB--> 
+
+            <div class="card"> 
+            <div class="card-header">
+                <h4 class="card-title d-inline-block">Upcoming Appointments</h4> <a href="appointments.html" class="btn btn-primary float-right">View all</a>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table mb-0">
+                        <thead class="d-none">
+                            <tr>
+                                <th>Doctor Name</th>
+                                <th>Email</th>
+                                <th>Date and Time</th>
+                                <th class="text-right">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        <?php
+                        $userid=$_SESSION['username'];
+                        $query1 = "SELECT d.first_name AS fn,dm.email AS email, d.last_name AS ln, d.specialization AS spec, d.qualification AS qual, a.datetime as time FROM appointments a INNER JOIN doc_mail dm ON a.Doc_ID=dm.Doc_ID INNER JOIN doctors d ON d.Doc_ID=dm.Doc_ID  WHERE User_ID='$userid';";
+                        $results1=mysqli_query($conn, $query1);
+                        //loop
+                        $sno=1;
+                        foreach ($results1 as $d)
+                        {
+                            echo '<tr>
+                                <td style="min-width: 200px;">
+                                    <h4><a href="#"> Dr. '.$d['fn'].' '.$d['ln'].'</h4><br><span>'.$d['qual'].', '.$d['spec'].'</span></a>
+                                </td>                 
+                                <td>
+                                    <h5 class="time-title p-0">Email</h5>
+                                    <p>'.$d['email'].'</p>
+                                </td>
+                                <td>
+                                    <h5 class="time-title p-0">Timing</h5>
+                                    <p>'.$d['time'].'</p>
+                                </td>
+                                <td class="text-right">
+                                    <a href="https://pacific-brushlands-06281.herokuapp.com/" class="btn btn-outline-primary take-btn">Take up</a>
+                                </td>
+                            </tr>';
+                        }
+                            ?>
+                        </tbody>
+                        </table>	
+            </div>
+            </div>
+            </div>
+            
+
+            <!--END OF DASHBORD TAB--> 
+            </div>
+                <div class="tab-pane" id="profile">
                     <h1 class="mb-3 textCenter" style="color: black; text-transform : uppercase; "><?php echo $user;?></h1>
                     <div class="row">
                         <div class="col-md-6">

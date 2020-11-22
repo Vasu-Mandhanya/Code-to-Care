@@ -1,6 +1,7 @@
 <!doctype html>
 <html>
 <head>
+<link rel="icon" href="Assets/logo.jpeg" type="image/icon type">
 <link rel="icon" href="Assets/logo.png" type="image/icon type">
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -18,8 +19,96 @@
 <!-- Latest compiled JavaScript -->
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script> 
 <link href="css/styles.css" rel="stylesheet" type="text/css">
+<style>
+body {
+  background-image: url('Assets/GettyImages-1200706447-crop.jpg');
+  background-size: cover;
+}
+</style>
 </head>
+<?php 
+  // Initialize the session
+session_start();
+// Check if the user is already logged in, if yes then redirect him to welcome page
+if(!isset($_SESSION["loggedin"]))
+{
+    header("location: login.php");
+    exit;  
+}
+if(!isset($_SESSION["username"]))
+{
+    header("location: login.php");
+    exit;  
+}
+if($_SESSION["usertype"]!="user")
+{
+    header("location: login.php");
+    exit;  
+}
+require_once "DB/connect.php";
+if($_GET){
+
+    if(isset($_GET['docid']))
+    {
+        $docid=$_GET['docid'];
+        $_SESSION['docid']=$_GET['docid'];
+    }else
+    {
+        header("location: hospitals.php");
+        exit;  
+    }
+}
+?>
 <body>
+<?php
+// Include config file
+require_once "DB/connect.php";
+// Define variables and initialize with empty values
+$datetime="";
+$datetime_err="";
+$datetime_update="";
+ 
+// Processing form data when form is submitted
+if($_SERVER["REQUEST_METHOD"] == "POST")
+{
+    // Validate Pincode
+    if(empty(trim($_POST["datetime"]))){
+        $datetime_err = "Please enter Date and Time";     
+    }
+    else{
+        $datetime = trim($_POST["datetime"]);
+    }
+    
+    // Check input errors before inserting in database
+    if(empty($datetime_err))
+	{
+        // Prepare an insert statement
+        $sql1 = "INSERT INTO appointments (user_id,doc_id,datetime) VALUES (?,?,?)";
+        if($stmt1 = $conn->prepare($sql1))
+		{
+            // Bind variables to the prepared statement as parameters
+            $stmt1->bind_param("sss",$param_userid,$param_docid,$param_datetime);
+            // Set parameters
+            $param_datetime= $datetime;
+            $param_userid=$_SESSION['username'];
+            $param_docid=$_SESSION['docid'];
+            // Attempt to execute the prepared statement
+            if($stmt1 ->execute())
+            {           
+                        header("location: user.php");
+                    }
+                }
+			}
+			else
+				{
+					echo "Something went wrong. Please try again later.";
+				}
+            // Close statement
+            $stmt1->close();
+		}
+    // Close connection
+    $conn->close();
+?>
 <header>
   <nav class="navbar navbar-expand-lg navbar-purple">
   <a class="navbar-brand" href="index.php">CoVITal</a>
@@ -39,7 +128,7 @@
         <ul class="navbar-nav ml-auto">
         <?php 
   // Initialize the session
-session_start();
+#session_start();
         if(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true)
         {
             if($_SESSION["usertype"]=="user")
@@ -50,7 +139,7 @@ session_start();
             Hi ".$_SESSION['username'].'
         </a>
         <div class="dropdown-menu" style="background-color: #663399 ;" aria-labelledby="navbarDropdown">
-          <a class="nav-link" href="user.php">Profile</a>
+          <a class="nav-link " href="user.php">Profile</a>
           <div class="dropdown-divider"></div>
           <a class="nav-link" href="logout.php">Sign Out</a>
         </div>
@@ -80,7 +169,6 @@ session_start();
         <div class="dropdown-menu" style="background-color: #663399 ;" aria-labelledby="navbarDropdown">
           <a class="nav-link" href="hospitalProfile.php">Patients</a>
           <a class="nav-link" href="HospitalUpdateInfo.php">Profile</a>
-          <a class="nav-link" href="hospital_doctors.php">Doctors</a>
           <div class="dropdown-divider"></div>
           <a class="nav-link" href="logout.php">Sign Out</a>
         </div>
@@ -91,7 +179,7 @@ session_start();
     {
       echo "
       <li class='nav-item dropdown'>
-      <a class='nav-link dropdown-toggle' id='navbarDropdown' role='button' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>
+      <a class='nav-link dropdown-toggle active' id='navbarDropdown' role='button' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>
       ".'Login'.'
       </a>
       <div class="dropdown-menu" style="background-color: #663399 ;" aria-labelledby="navbarDropdown">
@@ -106,58 +194,30 @@ session_start();
     </div>
 </nav>
 </header>
-<?php
-$_SESSION['HospitalName']=$_SESSION['username'];
-?>
-<section class="jumbotron text-center">
-                <div class="container">
-				<img src="Assets/doc_team.png"/>
-                    <h1 class="jumbotron-heading">List of registered Doctors in your hospital</h1>
-                    <p class="lead text-muted">The pandemic is causing a global helthcare emergency.As the healthcare services are not uniform and everyone can't afford to go an expensive doctor. We provide you with the contact details of doctors to consult with! </p>
-					<a href="doctorSignUp.php">Sign up a new doctor!</a>
-          &emsp;
-          <a href="doctorremove.php">Remove a doctor profile</a>
-				</div>	
-</section>
-                    <div class="table-responsive">
-                        <table class="table table-striped table-sm">
-                            <thead>
-                                <tr>
-                                    <th>S.No</th>
-                                    <th>Doc ID</th>
-                                    <th>Name</th>
-                                    <th>Qualification</th>
-                                    <th>Specialisation</th>
-                                    <th>E-mail</th>
-                                    <th>Phone No.</th>
-								
-                                </tr>
-                            </thead>
-                            <tbody>
-                        <?php 
-                        require_once("DB/connect.php");
-                        $hospitalname=$_SESSION['HospitalName'];
-                        $query1 = "SELECT * FROM doctors d1 INNER JOIN doc_mail d2 ON d1.Doc_ID=d2.Doc_ID INNER JOIN doc_phone d3 ON d2.Doc_ID=d3.Doc_ID INNER JOIN location l ON d1.Location_ID=l.Location_ID INNER JOIN district d4 ON d4.District_Code=l.District_Code INNER JOIN state s ON s.State_Code=d4.State_Code WHERE Hospital_ID='$hospitalname';";
-                        $results1=mysqli_query($conn, $query1);
-                        //loop
-                        $sno=1;
-                        foreach ($results1 as $d)
-                        {
-                            echo '<tr>';
-                            echo '<td>'.$sno.'</td>';
-                            $sno+=1;
-                            echo '<td>'.$d['Doc_ID'].'</td>';
-                            echo '<td>'.'Dr. '.$d['First_Name'].' '.$d['Last_Name'].'</td>';
-                            echo '<td>'.$d['Qualification'].'</td>';
-                            echo '<td>'.$d['Specialization'].'</td>';
-                            echo '<td>'.$d['Email'].'</td>';
-                            echo '<td>'.$d['Phone_No'].'</td>';
-                            echo '</tr>';
-                        }
-                        $results1->close(); 
-                        ?>  
-                            </tbody>
-                        </table>
-                    </div>
+<div class="wrapper" style="
+    display: inline-block;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 500px;
+    height: 600px;
+    margin: auto;
+    background-color: #f3f3f3;">
+        <h2>Book Appointment</h2>
+        <p>Please choose a convenient time.</p>
+        <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
+			<div class="form-group <?php echo (!empty($pincode_err)) ? 'has-error' : ''; ?>">
+                <label>Appointment Time</label>
+                <input type="datetime-local" name="datetime" class="form-control" value="<?php echo $datetime; ?>">
+				<span class="help-block"><?php echo $datetime_err; ?></span>
+            </div>    
+            <div class="form-group">
+                <input type="submit" class="btn btn-primary" value="Submit">
+                <input type="reset" class="btn btn-default" value="Reset">
+            </div>
+        </form>
+    </div>   
 </body>
 </html>

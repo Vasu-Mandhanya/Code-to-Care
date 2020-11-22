@@ -340,6 +340,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST")
         </a>
         <div class="dropdown-menu" style="background-color: #663399 ;" aria-labelledby="navbarDropdown">
           <a class="nav-link" href="hospitalProfile.php">Patients</a>
+          <a class="nav-link" href="Doctor_Login.php">Doctor</a>
           <a class="nav-link" href="HospitalUpdateInfo.php">Profile</a>
           <div class="dropdown-divider"></div>
           <a class="nav-link" href="logout.php">Sign Out</a>
